@@ -5,18 +5,41 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.codeitsolo.echojournal.core.effects.FlowObservableEffect
+import kotlinx.serialization.Serializable
 
 /**
- * Represents the EchoJournal app
+ * Represents the EchoJournal app.
  */
 @Composable
 fun EchoJournalApp() {
 
     val viewModel: AppViewModel = hiltViewModel()
+    val navController = rememberNavController()
 
-    Text(
-        modifier = Modifier
-            .systemBarsPadding(),
-        text = "Hello World!"
-    )
+    FlowObservableEffect(viewModel.navIntents) { intent ->
+        navController.intent()
+    }
+
+    NavHost(
+        navController = navController,
+        startDestination = HelloWorld
+    ){
+        composable<HelloWorld> {
+            Text(
+                modifier = Modifier
+                    .systemBarsPadding(),
+                text = "Hello World!"
+            )
+        }
+    }
 }
+
+/**
+ * Represents the example screen.
+ */
+@Serializable
+data object HelloWorld
