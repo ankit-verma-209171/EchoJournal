@@ -1,6 +1,5 @@
 package com.codeitsolo.echojournal.ui.theme
 
-import android.app.Activity
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
@@ -10,6 +9,8 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import com.codeitsolo.echojournal.ui.theme.MaterialThemeX
+import com.codeitsolo.echojournal.ui.theme.type.Typography
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -53,6 +54,10 @@ fun EchoJournalTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        content = content
+        content = {
+            MaterialThemeX(
+                content = content
+            )
+        }
     )
 }
