@@ -5,7 +5,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.runtime.Stable
+import com.codeitsolo.echojournal.ui.theme.color.LocalMaterialXColor
+import com.codeitsolo.echojournal.ui.theme.color.MaterialThemeXColor
+import com.codeitsolo.echojournal.ui.theme.color.extendedColor
 import com.codeitsolo.echojournal.ui.theme.type.LocalMaterialXTypography
 import com.codeitsolo.echojournal.ui.theme.type.MaterialThemeXTypography
 import com.codeitsolo.echojournal.ui.theme.type.extendedTypography
@@ -20,9 +22,11 @@ fun MaterialThemeX(
     content: @Composable () -> Unit,
 ) {
     val extendedTypography = extendedTypography
+    val extendedColor = extendedColor
 
     CompositionLocalProvider(
         LocalMaterialXTypography provides extendedTypography,
+        LocalMaterialXColor provides extendedColor,
         content = content
     )
 }
@@ -31,10 +35,21 @@ fun MaterialThemeX(
  * An object to access the material theme extensions.
  */
 object MaterialThemeX {
+    /**
+     * The material theme extensions typography.
+     */
     val typography: MaterialThemeXTypography
         @Composable
         @ReadOnlyComposable
         get() = LocalMaterialXTypography.current
+
+    /**
+     * The material theme extensions color.
+     */
+    val color: MaterialThemeXColor
+        @Composable
+        @ReadOnlyComposable
+        get() = LocalMaterialXColor.current
 }
 
 /**
