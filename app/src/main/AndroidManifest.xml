@@ -16,7 +16,9 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.EchoJournal.SplashScreen">
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.EchoJournal.SplashScreen"
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
