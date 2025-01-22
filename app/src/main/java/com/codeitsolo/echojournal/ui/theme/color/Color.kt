@@ -17,6 +17,7 @@ val LightColorScheme = lightColorScheme(
     primary = primary30,
     primaryContainer = primary50,
     onPrimary = primary100,
+    onPrimaryContainer = Color(0xFFEEF0FF),
     inversePrimary = secondary80,
     secondary = secondary30,
     secondaryContainer = secondary50,

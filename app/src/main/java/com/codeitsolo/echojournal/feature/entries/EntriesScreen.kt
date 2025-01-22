@@ -1,23 +1,28 @@
 package com.codeitsolo.echojournal.feature.entries
 
 import android.content.res.Configuration
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.BottomSheetScaffold
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.SheetValue
+import androidx.compose.material3.Surface
+import androidx.compose.material3.rememberBottomSheetScaffoldState
+import androidx.compose.material3.rememberStandardBottomSheetState
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -31,6 +36,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.codeitsolo.echojournal.R
+import com.codeitsolo.echojournal.core.models.AudioRecord
+import com.codeitsolo.echojournal.feature.entries.components.placeholder.NoEntriesPlaceholder
+import com.codeitsolo.echojournal.feature.entries.components.recordaudio.RecordEntryBottomSheetContent
 import com.codeitsolo.echojournal.ui.components.scaffold.GradientScaffoldX
 import com.codeitsolo.echojournal.ui.components.topappbar.EchoJournalTopBar
 import com.codeitsolo.echojournal.ui.theme.color.Gradient
@@ -52,6 +60,10 @@ internal fun EntriesRoute(
         modifier = modifier,
         uiState = uiState,
         onCreateRecordClick = viewModel::onCreateRecordClick,
+        onStartRecordingClick = viewModel::onStartRecordingClick,
+        onStopRecordingClick = viewModel::onStopRecordingClick,
+        onCompleteRecordingClick = viewModel::onCompleteRecordingClick,
+        onCancelRecordingClick = viewModel::onCancelRecordingClick
     )
 }
 
@@ -61,97 +73,132 @@ internal fun EntriesRoute(
  * @param modifier The modifier needed to be applied to the composable
  * @param uiState [EntriesUiState]
  * @param onCreateRecordClick Callback for creating a new record
+ * @param onStartRecordingClick Callback for start recording click.
+ * @param onStopRecordingClick Callback for stop recording click.
+ * @param onCompleteRecordingClick Callback for complete recording click.
+ * @param onCancelRecordingClick Callback for cancel recording click.
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EntriesScreen(
     modifier: Modifier = Modifier,
     uiState: EntriesUiState,
     onCreateRecordClick: () -> Unit,
+    onStartRecordingClick: () -> Unit,
+    onStopRecordingClick: () -> Unit,
+    onCompleteRecordingClick: () -> Unit,
+    onCancelRecordingClick: () -> Unit,
 ) {
-    GradientScaffoldX(
+    val audioDuration = remember(uiState.currentlyRecordingAudioRecord) {
+        uiState.currentlyRecordingAudioRecord?.duration ?: AudioRecord.DURATION_ZERO
+    }
+
+    val bottomSheetState = rememberStandardBottomSheetState(
+        initialValue = SheetValue.Hidden,
+        skipHiddenState = false
+    )
+    val scaffoldState = rememberBottomSheetScaffoldState(
+        bottomSheetState = bottomSheetState
+    )
+
+    LaunchedEffect(uiState.currentlyRecordingAudioRecord) {
+        if (uiState.currentlyRecordingAudioRecord != null) {
+            bottomSheetState.expand()
+        } else {
+            bottomSheetState.hide()
+        }
+    }
+
+    BottomSheetScaffold(
         modifier = modifier,
-        topBar = {
-            EchoJournalTopBar()
+        scaffoldState = scaffoldState,
+        sheetSwipeEnabled = false,
+        sheetContainerColor = MaterialTheme.colorScheme.background,
+        sheetDragHandle = {
+            Surface(
+                modifier = modifier.padding(vertical = 16.dp),
+                color = MaterialTheme.colorScheme.outlineVariant,
+                shape = RoundedCornerShape(100.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(
+                            width = 32.dp,
+                            height = 4.dp
+                        )
+                )
+            }
         },
-        floatingActionButton = {
-            Box(
+        sheetContent = {
+            RecordEntryBottomSheetContent(
                 modifier = Modifier
-                    .padding(8.dp)
-                    .clip(CircleShape)
-                    .size(64.dp)
-                    .background(Gradient.button)
-                    .clickable(
-                        interactionSource = remember { MutableInteractionSource() },
-                        indication = remember { ripple(bounded = false) },
-                        onClick = onCreateRecordClick
-                    ),
-                contentAlignment = Alignment.Center,
-                content = {
-                    Icon(
-                        modifier = Modifier
-                            .size(19.dp),
-                        painter = painterResource(R.drawable.ic_plus),
-                        contentDescription = stringResource(R.string.create_record),
-                        tint = Color.White
-                    )
-                }
+                    .fillMaxWidth()
+                    .navigationBarsPadding(),
+                recorderStatus = uiState.audioRecorderStatus,
+                audioRecordedDuration = audioDuration,
+                onStartRecordingClick = onStartRecordingClick,
+                onStopRecordingClick = onStopRecordingClick,
+                onCompleteRecordingClick = onCompleteRecordingClick,
+                onCancelRecordingClick = onCancelRecordingClick,
             )
         }
-    ) { innerPadding ->
+    ) {
+        GradientScaffoldX(
+            topBar = {
+                EchoJournalTopBar()
+            },
+            floatingActionButton = {
+                EntriesFloatingActionButton(
+                    modifier = Modifier
+                        .padding(8.dp),
+                    onCreateRecordClick = onCreateRecordClick
+                )
+            }
+        ) { innerPadding ->
 
-        // TODO: Show entries
+            // TODO: Show entries
 
-        NoEntriesPlaceholder(
-            modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
-        )
+            NoEntriesPlaceholder(
+                modifier = Modifier
+                    .padding(innerPadding)
+                    .fillMaxSize()
+            )
+        }
     }
 }
 
 /**
- * A placeholder to show when there are no entries
+ * A floating action button for entries screen to create new entries.
  *
- * @param modifier The modifier needed to be applied to the composable
+ * @param modifier Modifier for styling the button.
+ * @param onCreateRecordClick Callback for create record click.
  */
 @Composable
-private fun NoEntriesPlaceholder(
-    modifier: Modifier = Modifier
+private fun EntriesFloatingActionButton(
+    modifier: Modifier = Modifier,
+    onCreateRecordClick: () -> Unit,
 ) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(
-            modifier = Modifier
-                .weight(1f)
-        )
-        Image(
-            modifier = Modifier
-                .padding(bottom = 34.dp),
-            painter = painterResource(R.drawable.ic_no_entries),
-            contentDescription = null
-        )
-        Column(
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
-            Text(
-                text = stringResource(R.string.no_entries),
-                color = MaterialTheme.colorScheme.onSurface,
-                style = MaterialTheme.typography.headlineMedium
-            )
-            Text(
-                text = stringResource(R.string.start_recording_your_first_echo),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                style = MaterialTheme.typography.bodyMedium
+    Box(
+        modifier = modifier
+            .clip(CircleShape)
+            .size(64.dp)
+            .background(Gradient.button)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = remember { ripple(bounded = false) },
+                onClick = onCreateRecordClick
+            ),
+        contentAlignment = Alignment.Center,
+        content = {
+            Icon(
+                modifier = Modifier
+                    .size(19.dp),
+                painter = painterResource(R.drawable.ic_plus),
+                contentDescription = stringResource(R.string.create_record),
+                tint = Color.White
             )
         }
-        Spacer(
-            modifier = Modifier
-                .weight(2f)
-        )
-    }
+    )
 }
 
 // region Preview
@@ -163,6 +210,10 @@ private fun EntriesScreenPreview() {
     EntriesScreen(
         uiState = EntriesUiState(),
         onCreateRecordClick = {},
+        onStartRecordingClick = {},
+        onStopRecordingClick = {},
+        onCompleteRecordingClick = {},
+        onCancelRecordingClick = {}
     )
 }
 
