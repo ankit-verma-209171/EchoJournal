@@ -4,4 +4,6 @@
     <string name="create_record">Create record</string>
     <string name="no_entries">No Entries</string>
     <string name="start_recording_your_first_echo">Start recording your first Echo</string>
+    <string name="audio_permission_denied_rationale">Audio permission is required to create a new record.</string>
+    <string name="audio_permission_denied_permanently_rationale">Permission is denied. For creating a new record, please grant the permission from settings.</string>
 </resources>

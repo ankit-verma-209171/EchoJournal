@@ -25,7 +25,7 @@ internal class EntriesViewModel @Inject constructor() : ViewModel() {
             initialValue = getDefaultUiState()
         )
 
-    fun onCreateRecordClick() {
+    fun createRecord() {
         _uiState.update {
             it.copy(
                 audioRecorderStatus = AudioRecorderStatus.Recording,
