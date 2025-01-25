@@ -24,11 +24,14 @@ import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,7 +39,10 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.codeitsolo.echojournal.R
+import com.codeitsolo.echojournal.core.extensions.showToast
 import com.codeitsolo.echojournal.core.models.AudioRecord
+import com.codeitsolo.echojournal.core.permission.PermissionState
+import com.codeitsolo.echojournal.core.permission.rememberPermission
 import com.codeitsolo.echojournal.feature.entries.components.placeholder.NoEntriesPlaceholder
 import com.codeitsolo.echojournal.feature.entries.components.recordaudio.RecordEntryBottomSheetContent
 import com.codeitsolo.echojournal.ui.components.scaffold.GradientScaffoldX
@@ -55,11 +61,41 @@ internal fun EntriesRoute(
     viewModel: EntriesViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val permission by rememberPermission(android.Manifest.permission.RECORD_AUDIO)
+    val context = LocalContext.current
+    var pendingCreateRecordTask: Boolean by remember(Unit) { mutableStateOf(false) }
+
+    fun onCreateRecordClick() {
+        if (permission.state == PermissionState.DeniedPermanently) {
+            context.showToast(message = context.getString(R.string.audio_permission_denied_permanently_rationale))
+            return
+        }
+
+        if (permission.state == PermissionState.Granted) {
+            viewModel.createRecord()
+        } else {
+            permission.requestPermission()
+            pendingCreateRecordTask = true
+        }
+    }
+
+    LaunchedEffect(permission.state) {
+        if (pendingCreateRecordTask) {
+            if (permission.state == PermissionState.Granted) {
+                viewModel.createRecord()
+            } else if (permission.state == PermissionState.DeniedPermanently) {
+                context.showToast(message = context.getString(R.string.audio_permission_denied_permanently_rationale))
+            } else {
+                context.showToast(message = context.getString(R.string.audio_permission_denied_rationale))
+            }
+            pendingCreateRecordTask = false
+        }
+    }
 
     EntriesScreen(
         modifier = modifier,
         uiState = uiState,
-        onCreateRecordClick = viewModel::onCreateRecordClick,
+        onCreateRecordClick = ::onCreateRecordClick,
         onStartRecordingClick = viewModel::onStartRecordingClick,
         onStopRecordingClick = viewModel::onStopRecordingClick,
         onCompleteRecordingClick = viewModel::onCompleteRecordingClick,
