@@ -37,10 +37,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LifecycleStartEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.codeitsolo.echojournal.R
 import com.codeitsolo.echojournal.core.extensions.showToast
 import com.codeitsolo.echojournal.core.models.AudioRecord
+import com.codeitsolo.echojournal.core.models.AudioRecorderStatus
 import com.codeitsolo.echojournal.core.permission.PermissionState
 import com.codeitsolo.echojournal.core.permission.rememberPermission
 import com.codeitsolo.echojournal.feature.entries.components.placeholder.NoEntriesPlaceholder
@@ -92,12 +94,22 @@ internal fun EntriesRoute(
         }
     }
 
+    LifecycleStartEffect(Unit) {
+        onStopOrDispose {
+            if (uiState.currentlyRecordingAudioRecord != null &&
+                uiState.audioRecorderStatus == AudioRecorderStatus.Recording
+            ) {
+                viewModel.onPauseRecordingClick()
+            }
+        }
+    }
+
     EntriesScreen(
         modifier = modifier,
         uiState = uiState,
         onCreateRecordClick = ::onCreateRecordClick,
-        onStartRecordingClick = viewModel::onStartRecordingClick,
-        onStopRecordingClick = viewModel::onStopRecordingClick,
+        onResumeRecordingClick = viewModel::onResumeRecordingClick,
+        onPauseRecordingClick = viewModel::onPauseRecordingClick,
         onCompleteRecordingClick = viewModel::onCompleteRecordingClick,
         onCancelRecordingClick = viewModel::onCancelRecordingClick
     )
@@ -109,8 +121,8 @@ internal fun EntriesRoute(
  * @param modifier The modifier needed to be applied to the composable
  * @param uiState [EntriesUiState]
  * @param onCreateRecordClick Callback for creating a new record
- * @param onStartRecordingClick Callback for start recording click.
- * @param onStopRecordingClick Callback for stop recording click.
+ * @param onResumeRecordingClick Callback for resume recording click.
+ * @param onPauseRecordingClick Callback for pause recording click.
  * @param onCompleteRecordingClick Callback for complete recording click.
  * @param onCancelRecordingClick Callback for cancel recording click.
  */
@@ -120,8 +132,8 @@ private fun EntriesScreen(
     modifier: Modifier = Modifier,
     uiState: EntriesUiState,
     onCreateRecordClick: () -> Unit,
-    onStartRecordingClick: () -> Unit,
-    onStopRecordingClick: () -> Unit,
+    onResumeRecordingClick: () -> Unit,
+    onPauseRecordingClick: () -> Unit,
     onCompleteRecordingClick: () -> Unit,
     onCancelRecordingClick: () -> Unit,
 ) {
@@ -172,8 +184,8 @@ private fun EntriesScreen(
                     .navigationBarsPadding(),
                 recorderStatus = uiState.audioRecorderStatus,
                 audioRecordedDuration = audioDuration,
-                onStartRecordingClick = onStartRecordingClick,
-                onStopRecordingClick = onStopRecordingClick,
+                onResumeRecordingClick = onResumeRecordingClick,
+                onPauseRecordingClick = onPauseRecordingClick,
                 onCompleteRecordingClick = onCompleteRecordingClick,
                 onCancelRecordingClick = onCancelRecordingClick,
             )
@@ -246,8 +258,8 @@ private fun EntriesScreenPreview() {
     EntriesScreen(
         uiState = EntriesUiState(),
         onCreateRecordClick = {},
-        onStartRecordingClick = {},
-        onStopRecordingClick = {},
+        onResumeRecordingClick = {},
+        onPauseRecordingClick = {},
         onCompleteRecordingClick = {},
         onCancelRecordingClick = {}
     )
