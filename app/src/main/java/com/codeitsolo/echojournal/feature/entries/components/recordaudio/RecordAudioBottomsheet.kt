@@ -26,8 +26,8 @@ import com.codeitsolo.echojournal.ui.theme.EchoJournalTheme
  * @param modifier Modifier for styling the content.
  * @param recorderStatus Status of the recording.
  * @param audioRecordedDuration Duration of the audio recorded.
- * @param onStartRecordingClick Callback for start recording click.
- * @param onStopRecordingClick Callback for stop recording click.
+ * @param onResumeRecordingClick Callback for resume recording click.
+ * @param onPauseRecordingClick Callback for pause recording click.
  * @param onCompleteRecordingClick Callback for complete recording click.
  * @param onCancelRecordingClick Callback for cancel recording click.
  */
@@ -36,8 +36,8 @@ internal fun RecordEntryBottomSheetContent(
     modifier: Modifier = Modifier,
     recorderStatus: AudioRecorderStatus,
     audioRecordedDuration: String,
-    onStartRecordingClick: () -> Unit,
-    onStopRecordingClick: () -> Unit,
+    onResumeRecordingClick: () -> Unit,
+    onPauseRecordingClick: () -> Unit,
     onCompleteRecordingClick: () -> Unit,
     onCancelRecordingClick: () -> Unit,
 ) {
@@ -74,7 +74,7 @@ internal fun RecordEntryBottomSheetContent(
                     if (recorderStatus == AudioRecorderStatus.Recording) {
                         onCompleteRecordingClick()
                     } else {
-                        onStartRecordingClick()
+                        onResumeRecordingClick()
                     }
                 }
             )
@@ -87,7 +87,7 @@ internal fun RecordEntryBottomSheetContent(
                 iconTint = MaterialTheme.colorScheme.primary,
                 onClick = {
                     if (recorderStatus == AudioRecorderStatus.Recording) {
-                        onStopRecordingClick()
+                        onPauseRecordingClick()
                     } else {
                         onCompleteRecordingClick()
                     }
@@ -137,8 +137,8 @@ fun RecordEntryBottomSheetContentPreview() {
         RecordEntryBottomSheetContent(
             recorderStatus = AudioRecorderStatus.Recording,
             audioRecordedDuration = "00:00",
-            onStartRecordingClick = {},
-            onStopRecordingClick = {},
+            onResumeRecordingClick = {},
+            onPauseRecordingClick = {},
             onCompleteRecordingClick = {},
             onCancelRecordingClick = {}
         )
