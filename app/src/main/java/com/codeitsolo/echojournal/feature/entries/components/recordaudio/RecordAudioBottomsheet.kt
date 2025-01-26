@@ -136,7 +136,7 @@ fun RecordEntryBottomSheetContentPreview() {
     EchoJournalTheme {
         RecordEntryBottomSheetContent(
             recorderStatus = AudioRecorderStatus.Recording,
-            audioRecordedDuration = "00:00",
+            audioRecordedDuration = "00:00:00",
             onResumeRecordingClick = {},
             onPauseRecordingClick = {},
             onCompleteRecordingClick = {},

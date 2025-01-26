@@ -8,6 +8,7 @@ import kotlinx.datetime.format
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.toLocalDateTime
+import java.util.Locale
 
 /**
  * Model representing an audio record.
@@ -16,8 +17,22 @@ import kotlinx.datetime.toLocalDateTime
  */
 @Immutable
 data class AudioRecord(
-    val duration: String = DURATION_ZERO,
+    val durationSeconds: Long = 0,
 ) {
+    /**
+     * The duration of the audio record in a human-readable format.
+     */
+    val duration: String
+        get() {
+            val hours = durationSeconds / 3600
+            val minutes = (durationSeconds % 3600) / 60
+            val secs = durationSeconds % 60
+            return String.format(
+                locale = Locale.getDefault(),
+                format = "%02d:%02d:%02d", hours, minutes, secs
+            )
+        }
+
     /**
      * The date and time when the audio record was created.
      */
