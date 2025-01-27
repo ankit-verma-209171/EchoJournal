@@ -6,4 +6,14 @@
     <string name="start_recording_your_first_echo">Start recording your first Echo</string>
     <string name="audio_permission_denied_rationale">Audio permission is required to create a new record.</string>
     <string name="audio_permission_denied_permanently_rationale">Permission is denied. For creating a new record, please grant the permission from settings.</string>
+    <string name="new_entry">New Entry</string>
+    <string name="navigate_back_to_home_screen">Navigate back to home screen</string>
+    <string name="add_mood">Add mood</string>
+    <string name="add_title">Add Title...</string>
+    <string name="edit_description">Edit description</string>
+    <string name="add_description">Add Description...</string>
+    <string name="cancel">Cancel</string>
+    <string name="confirm">Confirm</string>
+    <string name="save">Save</string>
+    <string name="how_are_you_doing">How are you doing?</string>
 </resources>

@@ -1,9 +1,12 @@
 package com.codeitsolo.echojournal.feature.entries.navigation
 
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.codeitsolo.echojournal.feature.entries.EntriesRoute
+import com.codeitsolo.echojournal.feature.entries.create.CreateEntryRoute
 
 /**
  * Adds the navigation entries for the "Entries" feature to the navigation graph.
@@ -18,6 +21,15 @@ fun NavGraphBuilder.entries() {
 
         composable<Entries> {
             EntriesRoute()
+        }
+
+        composable<CreateEntry>(
+            typeMap = CreateEntry.toTypeMap()
+        ) {
+            CreateEntryRoute(
+                modifier = Modifier
+                    .imePadding()
+            )
         }
     }
 }
