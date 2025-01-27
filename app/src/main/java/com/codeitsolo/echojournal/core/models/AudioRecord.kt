@@ -8,6 +8,7 @@ import kotlinx.datetime.format
 import kotlinx.datetime.format.FormatStringsInDatetimeFormats
 import kotlinx.datetime.format.byUnicodePattern
 import kotlinx.datetime.toLocalDateTime
+import kotlinx.serialization.Serializable
 import java.util.Locale
 
 /**
@@ -16,6 +17,7 @@ import java.util.Locale
  * @property duration The duration of the audio record.
  */
 @Immutable
+@Serializable
 data class AudioRecord(
     val durationSeconds: Long = 0,
 ) {
@@ -41,7 +43,7 @@ data class AudioRecord(
         .format(
             LocalDateTime.Format {
                 @OptIn(FormatStringsInDatetimeFormats::class)
-                byUnicodePattern("yyyy-MM-dd HH:mm:ss")
+                byUnicodePattern("yyyy-MM-dd-HH:mm:ss")
             }
         )
 

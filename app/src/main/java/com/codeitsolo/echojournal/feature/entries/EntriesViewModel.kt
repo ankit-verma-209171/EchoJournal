@@ -9,6 +9,8 @@ import com.codeitsolo.echojournal.core.domain.recorder.AudioRecorder
 import com.codeitsolo.echojournal.core.domain.timer.Timer
 import com.codeitsolo.echojournal.core.models.AudioRecord
 import com.codeitsolo.echojournal.core.models.AudioRecorderStatus
+import com.codeitsolo.echojournal.feature.entries.navigation.CreateEntry
+import com.codeitsolo.echojournal.navigation.Navigator
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineDispatcher
@@ -30,6 +32,7 @@ internal class EntriesViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val audioRecorder: AudioRecorder,
     private val timer: Timer,
+    private val navigator: Navigator,
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(getDefaultUiState())
@@ -44,6 +47,10 @@ internal class EntriesViewModel @Inject constructor(
     private var timerJob: Job? = null
 
     fun createRecord() {
+        // TODO: Remove this
+        navigator.navigate(CreateEntry(AudioRecord(durationSeconds = 100)))
+        return
+
         val newAudioRecord = AudioRecord()
         File(context.cacheDir, newAudioRecord.fileName).also {
             audioRecorder.start(it)

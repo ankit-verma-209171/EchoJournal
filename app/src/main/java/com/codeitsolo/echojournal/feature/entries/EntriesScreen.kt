@@ -1,6 +1,5 @@
 package com.codeitsolo.echojournal.feature.entries
 
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -252,7 +251,6 @@ private fun EntriesFloatingActionButton(
 // region Preview
 
 @Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun EntriesScreenPreview() {
     EntriesScreen(
